@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 ROOT = os.path.realpath(os.path.join(os.path.dirname(
     sys.modules['__main__'].__file__)))
 
-__version__ = '0.4'
+__version__ = '0.5'
 
 
 setup(
@@ -35,14 +35,17 @@ setup(
     platforms='any',
     install_requires=[
         'Flask>=0.11',
+        'SQLAlchemy==1.3.22',
         'Flask-SQLAlchemy',
         'Flask-Migrate',
         'Flask-Login',
-        'Flask-WTF',
+        'WTForms==2.3.3',
+        'Flask-WTF==0.14.3',
         'Flask-Principal',
         'passlib',
         'blinker',
-        'docutils'
+        'docutils',
+        'pkginfo'
     ],
     setup_requires=['pytest-runner'],
     tests_require=['pytest'],

@@ -1,7 +1,9 @@
 Flask
+SQLAlchemy==1.3.22
 Flask-SQLAlchemy
 Flask-Migrate
 Flask-Login
+WTForms==2.3.3
 Flask-WTF
 Flask-Principal
 passlib
