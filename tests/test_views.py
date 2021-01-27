@@ -300,6 +300,70 @@ def test_update_user(client, user, admin_headers):
     assert user.role == data['role']
 
 
+def test_update_user_not_unique_email(client, user, admin_headers):
+    """Test update of a user"""
+    resp = client.get('/dashboard/users/create', headers=admin_headers)
+    assert resp.status_code == 200
+    data = {
+        'username': 'u',
+        'email': 'u@mail.com',
+        'role': 'developer',
+        'password': 'u',
+        'confirm': 'u',
+        'active': 'y'
+    }
+    resp = client.post('/dashboard/users/create', headers=admin_headers, data=data)
+    assert resp.status_code == 302
+
+    data = {
+        'username': user.username,
+        'email': 'u@mail.com',
+        'role': 'maintainer',
+        'active': 'y'
+    }
+
+    resp = client.post('/dashboard/users/%d' % user.id, headers=admin_headers, data=data)
+    assert resp.status_code == 200
+
+    user_from_db = User.query.filter_by(id=user.id).first()
+    assert user_from_db.username == user.username
+    assert user_from_db.email == user.email
+    assert user_from_db.email != data['email']
+    assert user_from_db.role == user.role
+
+
+def test_update_user_not_unique_username(client, user, admin_headers):
+    """Test update of a user"""
+    resp = client.get('/dashboard/users/create', headers=admin_headers)
+    assert resp.status_code == 200
+    data = {
+        'username': 'u2',
+        'email': 'u2@mail.com',
+        'role': 'developer',
+        'password': 'u2',
+        'confirm': 'u2',
+        'active': 'y'
+    }
+    resp = client.post('/dashboard/users/create', headers=admin_headers, data=data)
+    assert resp.status_code == 302
+
+    data = {
+        'username': 'u2',
+        'email': user.email,
+        'role': 'maintainer',
+        'active': 'y'
+    }
+
+    resp = client.post('/dashboard/users/%d' % user.id, headers=admin_headers, data=data)
+    assert resp.status_code == 200
+
+    user_from_db = User.query.filter_by(id=user.id).first()
+    assert user_from_db.username == user.username
+    assert user_from_db.username != data['username']
+    assert user_from_db.email == user.email
+    assert user_from_db.role == user.role
+
+
 def test_delete_user(client, user, admin_headers):
     """Test deletion of a user"""
     user_id = user.id
