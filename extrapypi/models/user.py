@@ -35,6 +35,16 @@ class User(db.Model):
     def is_admin(self):
         return self.role == 'admin'
 
+    @property
+    def email_is_in_use(self):
+        q = db.session.query(User.id).filter(User.email == self.email)
+        return db.session.query(q.exists()).scalar()
+
+    @property
+    def username_is_in_use(self):
+        q = db.session.query(User.id).filter(User.username == self.username)
+        return db.session.query(q.exists()).scalar()
+
     def get_id(self):
         try:
             return unicode(self.id)

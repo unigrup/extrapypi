@@ -207,6 +207,72 @@ def test_create_users(client, admin_headers):
     assert 'developer' in resp.get_data(as_text=True)
 
 
+def test_create_user_not_unique_email(client, admin_headers):
+    """Test creation of a new user"""
+    # just getting the page
+    resp = client.get('/dashboard/users/create', headers=admin_headers)
+    assert resp.status_code == 200
+
+    data = {
+        'username': 'unique_user',
+        'email': 'unique_user@mail.com',
+        'role': 'developer',
+        'password': 'test',
+        'confirm': 'test',
+        'active': 'y'
+    }
+    resp = client.post('/dashboard/users/create', headers=admin_headers, data=data)
+    assert resp.status_code == 302
+
+    resp = client.get('/dashboard/users/', headers=admin_headers)
+    assert 'newuser' in resp.get_data(as_text=True)
+    assert 'email' in resp.get_data(as_text=True)
+    assert 'developer' in resp.get_data(as_text=True)
+
+    data['username'] = 'unique_user_2'
+
+    resp = client.post('/dashboard/users/create', headers=admin_headers, data=data)
+    assert resp.status_code == 200
+
+    user = User.query.filter_by(username=data['username']).first()
+    unique_user = User.query.filter_by(email=data['email']).all()
+    assert user is None
+    assert len(unique_user) == 1
+
+
+def test_create_user_not_unique_username(client, admin_headers):
+    """Test creation of a new user"""
+    # just getting the page
+    resp = client.get('/dashboard/users/create', headers=admin_headers)
+    assert resp.status_code == 200
+
+    data = {
+        'username': 'unique_user_2',
+        'email': 'unique_user_2@mail.com',
+        'role': 'developer',
+        'password': 'test',
+        'confirm': 'test',
+        'active': 'y'
+    }
+    resp = client.post('/dashboard/users/create', headers=admin_headers, data=data)
+    assert resp.status_code == 302
+
+    resp = client.get('/dashboard/users/', headers=admin_headers)
+    assert 'newuser' in resp.get_data(as_text=True)
+    assert 'email' in resp.get_data(as_text=True)
+    assert 'developer' in resp.get_data(as_text=True)
+
+    data['email'] = 'unique_user_3@mail.com'
+
+    resp = client.post('/dashboard/users/create', headers=admin_headers, data=data)
+    assert resp.status_code == 200
+
+    user = User.query.filter_by(email=data['email']).first()
+    unique_user = User.query.filter_by(username=data['username']).all()
+    assert user is None
+    assert len(unique_user) == 1
+
+
 def test_view_user(client, user, admin_headers):
     """Test simple get of a user"""
     resp = client.get('/dashboard/users/%d' % user.id, headers=admin_headers)

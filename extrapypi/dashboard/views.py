@@ -175,10 +175,20 @@ def create_user():
         )
         u.password_hash = custom_app_context.hash(form.password.data)
 
+        if u.username_is_in_use:
+            flash("This username is already been used. Please choose another one!", "alert-danger")
+            form.username.errors.append('Please correct this field')
+            return render_template("dashboard/user_create.html", form=form)
+
+        if u.email_is_in_use:
+            flash("This email is already been used. Please choose another one!", "alert-danger")
+            form.email.errors.append('Please correct this field')
+            return render_template("dashboard/user_create.html", form=form)
+
         db.session.add(u)
         db.session.commit()
 
-        flash("User created")
+        flash("User created", "alert-success")
         return redirect(url_for('dashboard.users_list'))
     return render_template("dashboard/user_create.html", form=form)
 
