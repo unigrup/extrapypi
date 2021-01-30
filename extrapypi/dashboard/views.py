@@ -175,10 +175,20 @@ def create_user():
         )
         u.password_hash = custom_app_context.hash(form.password.data)
 
+        if User.username_is_in_use(u.username):
+            flash("This username is already been used. Please choose another one!", "alert-danger")
+            form.username.errors.append('Please correct this field')
+            return render_template("dashboard/user_create.html", form=form)
+
+        if User.email_is_in_use(u.email):
+            flash("This email is already been used. Please choose another one!", "alert-danger")
+            form.email.errors.append('Please correct this field')
+            return render_template("dashboard/user_create.html", form=form)
+
         db.session.add(u)
         db.session.commit()
 
-        flash("User created")
+        flash("User created", "alert-success")
         return redirect(url_for('dashboard.users_list'))
     return render_template("dashboard/user_create.html", form=form)
 
@@ -194,6 +204,16 @@ def user_detail(user_id):
     form.role.choices = [(r, r) for r in User.ROLES]
 
     if form.validate_on_submit():
+        if form.username.data != user.username and User.username_is_in_use(form.username.data):
+            flash("This username is already been used. Please choose another one!", "alert-danger")
+            form.username.errors.append('Please correct this field')
+            return render_template("dashboard/user_detail.html", form=form, user=user)
+
+        if form.email.data != user.email and User.email_is_in_use(form.email.data):
+            flash("This email is already been used. Please choose another one!", "alert-danger")
+            form.email.errors.append('Please correct this field')
+            return render_template("dashboard/user_detail.html", form=form, user=user)
+
         flash("User updated")
         form.populate_obj(user)
         db.session.commit()
