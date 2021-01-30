@@ -16,6 +16,9 @@ simply.
 * [Deployment](#deployment)
 * [Usage](#usage)
 
+Little preview
+
+![demo image](docs/images/demo.gif)
 
 ## Features
 
@@ -123,6 +126,99 @@ Once done, you can access the dashboard at the following address :
 
 You can see full examples for deploying extrapypi in production in the documentation
 
+### Run as a service (Ubuntu 20.04)
+In this example we are going to run extrapypi as a service. So extrapypi will be initialized automatically on start/reboot.
+##### Step 1 - clone the repo
+```sh 
+git clone https://github.com/karec/extrapypi.git
+```
+##### Step 2 - Enter inside extrapypi folder 
+```sh
+cd extrapypi 
+```
+##### Step 3 - Create virtual environment
+```sh
+python3 -m venv venv 
+```
+##### Step 4 - activate vistual environmet
+```sh 
+source ./venv/bin/activate
+```
+##### Step 5 - Install extrapypi 
+```sh 
+python setup.py install
+```
+##### Step 6 install uwsgi
+```sh 
+pip3 install uwsgi
+```
+##### Step 7 - Create configuration file
+```sh
+extrapypi start --filename myconfig.cfg
+```
+##### Step 8 - Update value from myconfig.cfg
+In this step we want to adapt the values from myconfig.cfg to adap them to our needs.
+##### Step 9 - Init database
+```sh 
+EXTRAPYPI_CONFIG=/path/to/myconfig.cfg extrapypi init
+```
+##### Step 10 - Create a file that will load the service configuration 
+```sh 
+nano /lib/systemd/system/extrapypi.service
+```
+Now a service definition is created.
+Make sure to change path-project-files, path-to-file and path-to-env to your paths.
+
+```sh 
+[Unit]
+Description=uWSGI instance to serve extrapypi
+After=network.target
+
+[Service]
+User=root
+Group=root
+WorkingDirectory=/path-project-files/extrapypi
+Environment="EXTRAPYPI_CONFIG=/path-to-file/myconfig.cfg"
+ExecStart=/path-to-env/venv/bin/uwsgi --http 0.0.0.0:8000 --module extrapypi.wsgi:app
+
+[Install]
+WantedBy=multi-user.target
+```
+
+##### Step 11 - enable extrapypi service
+```sh 
+sudo systemctl enable extrapypi
+```
+
+##### Step 12 - Start extrapypi service
+```sh 
+sudo systemctl start extrapyp
+```
+
+##### Step 13 - Check extrapypi service status
+```sh 
+sudo systemctl status extrapyp
+```
+
+##### Step 14 - Go to url
+Open a browser and type: http://your-ip:8000/dashboard/
+
+Example:
+* http://192.168.1.14:8000/dashboard/
+* http://127.0.0.1:8000/dashboard/
+
+Every time you change extrapypi.service file, you will need to reload the configuration again and restart the service:
+```sh 
+systemctl daemon-reload
+```
+```sh 
+systemctl restart extrapypi
+```
+
+To check service logs:
+```sh 
+journalctl -u extrapypi
+```
 
 **WARNING** since extrapypi use basic auth, we strongly advise to run it behind a reverse proxy (like nginx) and use 
 https
