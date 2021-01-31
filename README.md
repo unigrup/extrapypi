@@ -220,6 +220,96 @@ To check service logs:
 journalctl -u extrapypi
 ```
 
+### Run with nginx (Ubuntu 20.04)
+In this example configuration we are going to run extrapypi behind nginx web server.
+
+##### Step 1 - Update/adapt extrapypi service
+
+Make sure to change path-project-files, path-to-file, path-to-env and path-to-scket to your paths.
+
+```sh 
+nano /lib/systemd/system/extrapypi.service
+```
+
+```sh 
+[Unit]
+Description=uWSGI instance to serve extrapypi
+After=network.target
+
+[Service]
+User=root
+Group=root
+WorkingDirectory=/path-project-files/extrapypi
+Environment="EXTRAPYPI_CONFIG=/path-to-file/myconfig.cfg"
+ExecStart=/path-to-env/venv/bin/uwsgi --master --http 0.0.0.0:8000 --module extrapypi.wsgi:app --socket /path-to-scket/extrapypi.sock --chmod-socket=666 --vacuum --die-on-term
+
+
+[Install]
+WantedBy=multi-user.target
+```
+Reload new configuration
+```sh 
+systemctl daemon-reload
+```
+Restart service
+```sh 
+systemctl restart extrapypi
+```
+
+
+##### Step 2 - Install nginx
+```sh 
+apt install nginx
+```
+
+##### Step 3 - Edit nginx configuration
+In this case we are going to edit the default configuration to serve extrapypi
+```sh 
+nano /etc/nginx/sites-available/default
+```
+
+Make sure to change your-domain and path-to-socket to your stuff!
+```sh 
+server {
+        listen 80;
+        server_name your-domain;
+        location / {
+                include uwsgi_params;
+                uwsgi_pass unix:/path-to-socket/extrapypi.sock;
+        }
+}
+
+```
+##### Step 4 - Check configuration file for errors
+After saving the changes we check the configuration file for errors:
+```sh 
+nginx -t
+```
+
+##### Step 5 - Restart nginx 
+Once we make sure that the configuration file does not have any errors, we restart the service: 
+```sh 
+systemctl restart nginx
+```
+
+To check the status of nginx service:
+```sh 
+systemctl status nginx
+```
+
+In case of errors we can consult nginx error logs:
+```sh 
+less /var/log/nginx/error.log
+```
+
+##### Step 6 - Go to url
+Open a browser and type: http://your-domain/dashboard/
+
+Example:
+* http://example.com/dashboard/
+* http://192.168.1.14/dashboard/
+
+
 **WARNING** since extrapypi use basic auth, we strongly advise to run it behind a reverse proxy (like nginx) and use 
 https
 
