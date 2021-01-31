@@ -22,7 +22,7 @@ class UserCreateForm(FlaskForm):
         EqualTo('confirm', message='Passwords must match')
     ])
     confirm = PasswordField('Repeat password')
-    is_active = BooleanField('active')
+    is_active = BooleanField('active', render_kw={'checked': True})
 
 
 class LoginForm(FlaskForm):
