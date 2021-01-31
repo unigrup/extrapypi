@@ -200,24 +200,28 @@ def user_detail(user_id):
     """View to update user from admin account
     """
     user = User.query.get_or_404(user_id)
-    form = UserForm(request.form, obj=user)
-    form.role.choices = [(r, r) for r in User.ROLES]
 
-    if form.validate_on_submit():
-        if form.username.data != user.username and User.username_is_in_use(form.username.data):
-            flash("This username is already been used. Please choose another one!", "alert-danger")
-            form.username.errors.append('Please correct this field')
-            return render_template("dashboard/user_detail.html", form=form, user=user)
+    if request.method == 'GET':
+        form = UserForm(obj=user)
+        form.role.choices = [(r, r) for r in User.ROLES]
+    if request.method == 'POST':
+        form = UserForm(request.form)
+        form.role.choices = [(r, r) for r in User.ROLES]
+        if form.validate_on_submit():
+            if form.username.data != user.username and User.username_is_in_use(form.username.data):
+                flash("This username is already been used. Please choose another one!", "alert-danger")
+                form.username.errors.append('Please correct this field')
+                return render_template("dashboard/user_detail.html", form=form, user=user)
 
-        if form.email.data != user.email and User.email_is_in_use(form.email.data):
-            flash("This email is already been used. Please choose another one!", "alert-danger")
-            form.email.errors.append('Please correct this field')
-            return render_template("dashboard/user_detail.html", form=form, user=user)
+            if form.email.data != user.email and User.email_is_in_use(form.email.data):
+                flash("This email is already been used. Please choose another one!", "alert-danger")
+                form.email.errors.append('Please correct this field')
+                return render_template("dashboard/user_detail.html", form=form, user=user)
 
-        flash("User updated")
-        form.populate_obj(user)
-        db.session.commit()
-        return redirect(url_for('dashboard.users_list'))
+            flash("User updated", "alert-success")
+            form.populate_obj(user)
+            db.session.commit()
+            return redirect(url_for('dashboard.users_list'))
 
     return render_template("dashboard/user_detail.html", form=form, user=user)
 
