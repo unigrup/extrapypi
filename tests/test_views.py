@@ -2,6 +2,28 @@ from extrapypi.models import User
 from extrapypi.extensions import db
 
 
+def test_home_page(client):
+    """Test simple home page"""
+    res = client.get('/')
+    assert res.status_code == 200
+    assert b'Welcome to extrapypi server' in res.data
+
+
+def page_not_found_404(client):
+    """Test simple page not found"""
+    res = client.get('/page-not-existing')
+    assert res.status_code == 404
+    assert b'404 Page not found' in res.data
+
+
+def internal_server_error_500(client):
+    """Test simple internal error 500"""
+    res = client.get('/ping')
+    res.raise_for_status()
+    assert res.status_code == 500
+    assert b'Internal server error' in res.data
+
+
 def test_ping(client):
     """Test simple ping endpoint"""
     res = client.get('/ping')
