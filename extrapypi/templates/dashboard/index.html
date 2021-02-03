@@ -21,7 +21,7 @@
         {% if package.updated_at %}
         {{package.updated_at}}
         {% else %}
-        {{package.created_at.strftime("%Y-%m-%d")}}
+        {{package.created_at.strftime("%Y-%m-%d %H:%M:%S")}}
         {% endif %}
       </td>
       <td>
