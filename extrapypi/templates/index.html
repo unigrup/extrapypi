@@ -1,1 +1,71 @@
-hello
+<html>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}"/>
+
+    <style>
+        .code-example{
+            white-space: pre-wrap;
+            background: #f1f1f1;
+            overflow: auto;
+            font-family: 'Monaco', monospace;
+            border: 1px solid #999
+        }
+        .section-title{
+            margin-top: 3rem;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col text-center">
+            <h2>Welcome to extrapypi server</h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            Go to <a href="{{ url_for('dashboard.index') }}">dashboard</a> to see all packages.
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <h4 class="section-title">Uploading packages</h4>
+            <p>Extrapypi is compliant with setuptools / twine, you just need to update your `.pypirc` like this</p>
+            <div class="code-example">
+                [distutils]
+                index-servers =
+                local
+
+                [local]
+                username=admin
+                password=admin
+                repository=http://mypypiurl.com/simple/
+            </div>
+            <p>And then you can run</p>
+            <div class="code-example">
+                python setup.py bdist_wheel upload -r local
+            </div>
+            <p>Or using twine</p>
+            <div class="code-example">
+                twine upload -r local dist/extra_pypi-0.1-py3.5.egg
+            </div>
+
+            <h4 class="section-title">Installing packages from extrapypi</h4>
+            <p>Extrapypi is built to be used as an extra index, so you can simply run :</p>
+            <div class="code-example">
+                pip install extrapypi --extra-index-url http://user:password@mypypiurl.com/simple/
+            </div>
+            <p>or directly updating your `pip.conf` file </p>
+            <div class="code-example">
+                [global]
+                extra-index-url = http://user:password@mypypiurl.com/simple/
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

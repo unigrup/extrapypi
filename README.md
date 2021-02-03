@@ -16,6 +16,9 @@ simply.
 * [Deployment](#deployment)
 * [Usage](#usage)
 
+Little preview
+
+![demo image](docs/images/demo.gif)
 
 ## Features
 
@@ -122,6 +125,189 @@ Once done, you can access the dashboard at the following address :
 `http://mydomainorip:8000/dashboard`
 
 You can see full examples for deploying extrapypi in production in the documentation
+
+### Run as a service (Ubuntu 20.04)
+In this example we are going to run extrapypi as a service. So extrapypi will be initialized automatically on start/reboot.
+##### Step 1 - clone the repo
+```sh 
+git clone https://github.com/karec/extrapypi.git
+```
+##### Step 2 - Enter inside extrapypi folder 
+```sh
+cd extrapypi 
+```
+##### Step 3 - Create virtual environment
+```sh
+python3 -m venv venv 
+```
+##### Step 4 - activate vistual environmet
+```sh 
+source ./venv/bin/activate
+```
+##### Step 5 - Install extrapypi 
+```sh 
+python setup.py install
+```
+##### Step 6 install uwsgi
+```sh 
+pip3 install uwsgi
+```
+##### Step 7 - Create configuration file
+```sh
+extrapypi start --filename myconfig.cfg
+```
+##### Step 8 - Update value from myconfig.cfg
+In this step we want to adapt the values from myconfig.cfg to adap them to our needs.
+##### Step 9 - Init database
+```sh 
+EXTRAPYPI_CONFIG=/path/to/myconfig.cfg extrapypi init
+```
+##### Step 10 - Create a file that will load the service configuration 
+```sh 
+nano /lib/systemd/system/extrapypi.service
+```
+Now a service definition is created.
+Make sure to change path-project-files, path-to-file and path-to-env to your paths.
+
+```sh 
+[Unit]
+Description=uWSGI instance to serve extrapypi
+After=network.target
+
+[Service]
+User=root
+Group=root
+WorkingDirectory=/path-project-files/extrapypi
+Environment="EXTRAPYPI_CONFIG=/path-to-file/myconfig.cfg"
+ExecStart=/path-to-env/venv/bin/uwsgi --http 0.0.0.0:8000 --module extrapypi.wsgi:app
+
+[Install]
+WantedBy=multi-user.target
+```
+
+##### Step 11 - enable extrapypi service
+```sh 
+sudo systemctl enable extrapypi
+```
+
+##### Step 12 - Start extrapypi service
+```sh 
+sudo systemctl start extrapyp
+```
+
+##### Step 13 - Check extrapypi service status
+```sh 
+sudo systemctl status extrapyp
+```
+
+##### Step 14 - Go to url
+Open a browser and type: http://your-ip:8000/dashboard/
+
+Example:
+* http://192.168.1.14:8000/dashboard/
+* http://127.0.0.1:8000/dashboard/
+
+Every time you change extrapypi.service file, you will need to reload the configuration again and restart the service:
+```sh 
+systemctl daemon-reload
+```
+```sh 
+systemctl restart extrapypi
+```
+
+To check service logs:
+```sh 
+journalctl -u extrapypi
+```
+
+### Run with nginx (Ubuntu 20.04)
+In this example configuration we are going to run extrapypi behind nginx web server.
+
+##### Step 1 - Update/adapt extrapypi service
+
+Make sure to change path-project-files, path-to-file, path-to-env and path-to-scket to your paths.
+
+```sh 
+nano /lib/systemd/system/extrapypi.service
+```
+
+```sh 
+[Unit]
+Description=uWSGI instance to serve extrapypi
+After=network.target
+
+[Service]
+User=root
+Group=root
+WorkingDirectory=/path-project-files/extrapypi
+Environment="EXTRAPYPI_CONFIG=/path-to-file/myconfig.cfg"
+ExecStart=/path-to-env/venv/bin/uwsgi --master --http 0.0.0.0:8000 --module extrapypi.wsgi:app --socket /path-to-scket/extrapypi.sock --chmod-socket=666 --vacuum --die-on-term
+
+
+[Install]
+WantedBy=multi-user.target
+```
+Reload new configuration
+```sh 
+systemctl daemon-reload
+```
+Restart service
+```sh 
+systemctl restart extrapypi
+```
+
+
+##### Step 2 - Install nginx
+```sh 
+apt install nginx
+```
+
+##### Step 3 - Edit nginx configuration
+In this case we are going to edit the default configuration to serve extrapypi
+```sh 
+nano /etc/nginx/sites-available/default
+```
+
+Make sure to change your-domain and path-to-socket to your stuff!
+```sh 
+server {
+        listen 80;
+        server_name your-domain;
+        location / {
+                include uwsgi_params;
+                uwsgi_pass unix:/path-to-socket/extrapypi.sock;
+        }
+}
+
+```
+##### Step 4 - Check configuration file for errors
+After saving the changes we check the configuration file for errors:
+```sh 
+nginx -t
+```
+
+##### Step 5 - Restart nginx 
+Once we make sure that the configuration file does not have any errors, we restart the service: 
+```sh 
+systemctl restart nginx
+```
+
+To check the status of nginx service:
+```sh 
+systemctl status nginx
+```
+
+In case of errors we can consult nginx error logs:
+```sh 
+less /var/log/nginx/error.log
+```
+
+##### Step 6 - Go to url
+Open a browser and type: http://your-domain/dashboard/
+
+Example:
+* http://example.com/dashboard/
+* http://192.168.1.14/dashboard/
 
 
 **WARNING** since extrapypi use basic auth, we strongly advise to run it behind a reverse proxy (like nginx) and use 

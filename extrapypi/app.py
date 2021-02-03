@@ -115,6 +115,8 @@ def register_blueprints(app):
     csrf.exempt(simple.views.blueprint)
 
     app.register_blueprint(utils.views.blueprint)
+    app.register_error_handler(404, utils.views.page_not_found)
+    app.register_error_handler(500, utils.views.internal_server_error)
 
     if app.config['DASHBOARD'] is True:
         app.register_blueprint(dashboard.views.blueprint)
