@@ -13,6 +13,7 @@ from flask import (
     current_app
 )
 
+from extrapypi.extensions import db
 from extrapypi.models import Package
 from extrapypi.commons.permissions import installer_permission
 from extrapypi.commons.packages import create_release, get_store
@@ -84,9 +85,10 @@ def download_package(package, source):
         current_app.config['STORAGE'],
         current_app.config['STORAGE_PARAMS']
     )
-
     try:
         package_obj = Package.query.filter_by(name=package).one()
+        package_obj.total_downloads = package_obj.total_downloads + 1
+        db.session.commit()
     except NoResultFound:
         abort(404, "package %s does not exists" % package)
 

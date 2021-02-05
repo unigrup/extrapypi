@@ -19,6 +19,7 @@ class Package(db.Model):
     summary = db.Column(db.String(255, convert_unicode=True))
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
+    total_downloads = db.Column(db.Integer, default=0)
 
     maintainers = db.relationship('User', secondary=package_maintainers, lazy='dynamic', backref='packages')
 
