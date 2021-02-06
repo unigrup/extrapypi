@@ -1,4 +1,7 @@
-from extrapypi.models import User
+import pytest
+from sqlalchemy.orm.exc import NoResultFound
+
+from extrapypi.models import User, Package, Release
 from extrapypi.extensions import db
 
 
@@ -192,6 +195,39 @@ def test_package_upload(client, tmpdir, admin_headers, monkeypatch):
     monkeypatch.setattr(db.session, 'commit', raise_db)
     valid_data['file'] = (f.open('rb'), 'test-0.1.tar.gz')
     resp = client.post('/simple/', headers=admin_headers, data=valid_data)
+
+
+def test_delete_release(client, tmpdir, admin_headers):
+    """Test upload of a package"""
+    f = tmpdir.join("test")
+    f.write("a simple test")
+    valid_data = {
+        ':action': 'file_upload',
+        'name': 'uploaded-1',
+        'summary': 'from unittests 2',
+        'description': 'simple upload test 2',
+        'download_url': '',
+        'home_page': '',
+        'version': '0.1',
+        'keywords': ['test', 'other'],
+        'file': (f.open('rb'), 'test-0.1.tar.gz')
+    }
+    resp = client.post('/simple/', headers=admin_headers, data=valid_data)
+    assert resp.status_code == 200
+
+    package = Package.query.filter_by(name=valid_data['name']).one()
+    release = package.latest_release
+
+    assert package.latest_release.description == valid_data['description']
+    assert package.latest_release.version == valid_data['version']
+    resp = client.get('/dashboard/packages/releases/delete/' + str(release.id), headers=admin_headers)
+    assert resp.status_code == 302
+
+    with pytest.raises(NoResultFound):
+        package = Package.query.filter_by(name=valid_data['name']).one()
+
+    with pytest.raises(NoResultFound):
+        release = Release.query.filter_by(id=release.id).one()
 
 
 def test_list_users(client, users, admin_headers):
