@@ -10,6 +10,7 @@ from flask import Blueprint, request, flash, render_template, url_for, redirect
 
 from extrapypi.extensions import db
 from extrapypi.forms.user import UserForm, PasswordForm
+from extrapypi.models import User
 
 log = logging.getLogger("extrapypi")
 
@@ -34,10 +35,17 @@ def update_user():
     perm.test()
 
     if form.validate_on_submit():
-        form.populate_obj(user)
-        db.session.commit()
-        flash("Informations updated", "alert-info")
-        return redirect(url_for('dashboard.index'))
+        if form.username.data != user.username and User.username_is_in_use(form.username.data):
+            flash("This username is already been used. Please choose another one!", "alert-danger")
+            form.username.errors.append('Please correct this field')
+        elif form.email.data != user.email and User.email_is_in_use(form.email.data):
+            flash("This email is already been used. Please choose another one!", "alert-danger")
+            form.email.errors.append('Please correct this field')
+        else:
+            form.populate_obj(user)
+            db.session.commit()
+            flash("Informations updated", "alert-info")
+            return redirect(url_for('dashboard.index'))
 
     return render_template("user/update.html", form=form, user=current_user)
 
