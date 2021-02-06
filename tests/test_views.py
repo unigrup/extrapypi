@@ -416,6 +416,80 @@ def test_update_self(client, admin_user, admin_headers):
     assert u.email == data['email']
 
 
+def test_update_self_not_unique_username(client, admin_user, admin_headers):
+    """Test view for updating self informations"""
+    resp = client.get('/dashboard/users/create', headers=admin_headers)
+    assert resp.status_code == 200
+
+    data = {
+        'username': 'self_unique',
+        'email': 'self_unique@mail.com',
+        'role': 'admin',
+        'password': 'test',
+        'confirm': 'test',
+        'active': 'y'
+    }
+    resp = client.post('/dashboard/users/create', headers=admin_headers, data=data)
+    assert resp.status_code == 302
+
+    # check if form view work
+    resp = client.get("/user/", headers=admin_headers)
+
+    assert resp.status_code == 200
+    assert admin_user.username in resp.get_data(as_text=True)
+    assert admin_user.email in resp.get_data(as_text=True)
+
+    # check if update is ok
+    data2 = {
+        'username': data['username'],  # Existing username
+        'email': admin_user.email
+    }
+    resp = client.post("/user/", data=data2, headers=admin_headers)
+    assert resp.status_code == 200
+    assert 'This username is already been used. Please choose another one!' in resp.get_data(as_text=True)
+
+    u = User.query.filter_by(username=admin_user.username).one()
+    assert u.username == admin_user.username
+    assert u.email == admin_user.email
+
+
+def test_update_self_not_unique_email(client, admin_user, admin_headers):
+    """Test view for updating self informations"""
+    resp = client.get('/dashboard/users/create', headers=admin_headers)
+    assert resp.status_code == 200
+
+    data = {
+        'username': 'self_unique2',
+        'email': 'self_unique2@mail.com',
+        'role': 'admin',
+        'password': 'test',
+        'confirm': 'test',
+        'active': 'y'
+    }
+    resp = client.post('/dashboard/users/create', headers=admin_headers, data=data)
+    assert resp.status_code == 302
+
+    # check if form view work
+    resp = client.get("/user/", headers=admin_headers)
+
+    assert resp.status_code == 200
+    assert admin_user.username in resp.get_data(as_text=True)
+    assert admin_user.email in resp.get_data(as_text=True)
+
+    # check if update is ok
+    data2 = {
+        'username': admin_user.username,
+        'email': data['email'] # Existing email
+    }
+    resp = client.post("/user/", data=data2, headers=admin_headers)
+    assert resp.status_code == 200
+    assert 'This email is already been used. Please choose another one!' in resp.get_data(as_text=True)
+
+    u = User.query.filter_by(username=admin_user.username).one()
+    assert u.username == admin_user.username
+    assert u.email == admin_user.email
+
+
 def test_login_view(client, user):
     """Test view for login"""
 
