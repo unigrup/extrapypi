@@ -147,6 +147,27 @@ def delete_package(package_id):
     return redirect(url_for("dashboard.index"))
 
 
+@blueprint.route('/packages/releases/delete/<int:release_id>', methods=['GET'])
+@login_required
+@admin_permission.require()
+def delete_release(release_id):
+    """Delete a release"""
+    release = Release.query.get_or_404(release_id)
+    package = release.package
+
+    store = get_store(app.config['STORAGE'], app.config['STORAGE_PARAMS'])
+    if store.delete_release(package, release.version) is True:
+        db.session.delete(release)
+        db.session.commit()
+        flash("Release " + release.version + " from package " + package.name + " deleted", "alert-success")
+
+    if len(package.releases.all()) == 0:
+        delete_package(package.id)
+        flash("Package " + package.name + " deleted", "alert-success")
+
+    return redirect(url_for("dashboard.index"))
+
+
 @blueprint.route('/users/', methods=['GET'])
 @login_required
 @admin_permission.require()
