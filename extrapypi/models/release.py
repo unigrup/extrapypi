@@ -29,5 +29,21 @@ class Release(db.Model):
         lazy='joined',
     )
 
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey('user.id', name='_fk_release_user'),
+        nullable=True
+    )
+
+    user = db.relationship(
+        'User',
+        backref=db.backref(
+            'release',
+            lazy='dynamic',
+            cascade='save-update'
+        ),
+        lazy='joined'
+    )
+
     def __repr__(self):
         return "<Release {0.version} for package {0.package.name}>".format(self)

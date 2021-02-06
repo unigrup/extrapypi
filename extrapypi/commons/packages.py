@@ -102,7 +102,8 @@ def create_release(data, config, files):
             home_page=data.get('home_page', 'UNKNOWN'),
             version=data['version'],
             keywords=data.get('keywords'),
-            package=package
+            package=package,
+            user=current_user
         )
 
     try:
