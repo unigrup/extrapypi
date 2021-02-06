@@ -1,61 +1,71 @@
 <html>
-  <head>
+<head>
     <meta charset="utf-8">
-    <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap.min.css')}}"/>
-  </head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.min.css') }}" />
+</head>
 
-  <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a class="navbar-brand" href="{{url_for('dashboard.index')}}">extrapypi</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="{{ url_for('dashboard.index') }}">extrapypi</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
-      </button>
+    </button>
 
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="{{url_for('dashboard.index')}}">Dashboard <span class="sr-only">(current)</span></a>
-          </li>
-          {% if current_user.is_admin %}
-          <li class="nav-item">
-            <a class="nav-link" href="{{url_for('dashboard.users_list')}}">Users</a>
-          </li>
-          {% endif %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('dashboard.index') }}">Dashboard <span
+                        class="sr-only">(current)</span></a>
+            </li>
+            {% if current_user.is_admin %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('dashboard.users_list') }}">Users</a>
+                </li>
+            {% endif %}
         </ul>
         <ul class="navbar-nav ml-auto">
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              User
-            </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-              <a class="dropdown-item" href="{{url_for('user.update_user')}}">Update my info</a>
-              <a class="dropdown-item" href="{{url_for('user.update_password')}}">Update password</a>
-              <a class="dropdown-item" href="{{url_for('dashboard.logout')}}">Logout</a>
-            </div>
-          </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown"
+                   aria-haspopup="true" aria-expanded="false">
+                    User
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                    <a class="dropdown-item" href="{{ url_for('user.update_user') }}">Update my info</a>
+                    <a class="dropdown-item" href="{{ url_for('user.update_password') }}">Update password</a>
+                    <a class="dropdown-item" href="{{ url_for('dashboard.logout') }}">Logout</a>
+                </div>
+            </li>
         </ul>
-        <form class="form-inline my-2 my-lg-0 ml-3" method="POST" action="{{url_for('dashboard.search')}}">
-          <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search", name="search">
-          <button class="btn btn-outline-info my-2 my-sm-0" type="submit">Search</button>
+        <form class="form-inline my-2 my-lg-0 ml-3" method="POST" action="{{ url_for('dashboard.search') }}">
+            <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search" , name="search">
+            <button class="btn btn-outline-info my-2 my-sm-0" type="submit">Search</button>
         </form>
-      </div>
-    </nav>
-    <div class="container mt-2">
-      {% with messages = get_flashed_messages(with_categories=true) %}
+    </div>
+</nav>
+<div class="container mt-2">
+    {% with messages = get_flashed_messages(with_categories=true) %}
         {% for cat, message in messages %}
-          <div class="alert {{cat}}" role="alert">
-            {{message}}
-          </div>
+            <div class="alert {{ cat }}" role="alert">
+                {{ message }}
+            </div>
         {% endfor %}
-      {% endwith %}
-    </div>
-    <div class="container">
-      {% block body %}{% endblock %}
-    </div>
+    {% endwith %}
+</div>
+<div class="container">
+    {% block body %}{% endblock %}
+</div>
 
-    <script src="{{url_for('static', filename='js/jquery-3.2.1.min.js')}}"></script>
-    <script src="{{url_for('static', filename='js/popper.js')}}"></script>
-    <script src="{{url_for('static', filename='js/bootstrap.min.js')}}"></script>
+<script src="{{ url_for('static', filename='js/jquery-3.2.1.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/popper.js') }}"></script>
+<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
 
-  </body>
+<script type="text/javascript">
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+</script>
+
+</body>
 </html>

@@ -2,9 +2,24 @@
 {% from "_bootstrapform.html" import render_form %}
 
 {% block body %}
-<h1>Create user</h1>
-<form action="{{url_for('dashboard.create_user')}}" method="POST">
-  {{ render_form(form) }}
-  <input type="submit" value="validate" class="btn btn-primary"/>
-</form>
+    <h1>Create user</h1>
+    <form action="{{ url_for('dashboard.create_user') }}" method="POST">
+        {{ render_form(form) }}
+        <input type="submit" value="validate" class="btn btn-primary"/>
+    </form>
+
+    * Roles:
+    <ul class="list-group">
+        <li class="list-group-item"><strong>Admin</strong>: This is the most powerful role in the hole system. Users
+            with this role can create and deleted other users.
+            They can update and delete packages and releases.
+        </li>
+        <li class="list-group-item"><strong>Developer</strong>: Users with this role can upload and download packages
+            from the server.
+        </li>
+        <li class="list-group-item"><strong>Installer</strong>: Users with this role only can download packages from the
+            server.
+        </li>
+        <li class="list-group-item"><strong>Maintainer</strong></li>
+    </ul>
 {% endblock %}
