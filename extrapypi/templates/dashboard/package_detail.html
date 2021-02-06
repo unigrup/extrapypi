@@ -60,6 +60,12 @@
                     </div>
                 {% endfor %}
             {% endif %}
+
+            {% if release.user %}
+                <br />
+                <br />
+                <p>Release created by: {{ release.user.username }} | {{ release.user.email }}</p>
+            {% endif %}
         </div>
     </div>
     <div class="row">
