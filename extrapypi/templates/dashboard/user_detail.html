@@ -4,7 +4,7 @@
 {% block body %}
     <h1>
         Edit user
-        {% if user.id == current_user.id  %}
+        {% if user.id == current_user.id %}
             <span class="badge badge-warning">(Your user)</span>
         {% endif %}
     </h1>
@@ -12,4 +12,22 @@
         {{ render_form(form) }}
         <input type="submit" value="validate" class="btn btn-primary"/>
     </form>
+
+
+    * Roles:
+    <ul class="list-group">
+        <li class="list-group-item"><strong>Admin</strong>: This is the most powerful role in the hole system. Users
+            with this role can create and deleted other users.
+            They can update and delete packages and releases.
+        </li>
+        <li class="list-group-item"><strong>Developer</strong>: Users with this role can upload and download packages
+            from the server.
+        </li>
+        <li class="list-group-item"><strong>Installer</strong>: Users with this role only can download packages from the
+            server.
+        </li>
+        <li class="list-group-item"><strong>Maintainer</strong></li>
+    </ul>
+
+
 {% endblock %}
