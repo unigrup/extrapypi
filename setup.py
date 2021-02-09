@@ -45,7 +45,8 @@ setup(
         'passlib',
         'blinker',
         'docutils',
-        'pkginfo'
+        'pkginfo',
+        'boto3==1.17.3'
     ],
     setup_requires=['pytest-runner'],
     tests_require=['pytest'],

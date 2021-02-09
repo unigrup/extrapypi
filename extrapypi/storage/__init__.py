@@ -7,8 +7,9 @@ the storage of our choice (local file, cloud storage, etc.).
 For more control we provide a base class for drivers.
 """
 from .local import LocalStorage
-
+from .aws_s3 import AwsS3Storage
 
 __all__ = [
-    'LocalStorage'
+    'LocalStorage',
+    'AwsS3Storage'
 ]

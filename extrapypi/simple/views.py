@@ -92,4 +92,4 @@ def download_package(package, source):
     except NoResultFound:
         abort(404, "package %s does not exists" % package)
 
-    return send_file(store.get_file(package_obj, source))
+    return send_file(store.get_file(package_obj, source), attachment_filename=source)
