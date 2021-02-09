@@ -401,3 +401,17 @@ tox -e sqlite
 ```
 
 You can also run tox in all envs if needed
+
+
+### Docker
+In case you want to run in inside docker
+#### Build docker
+```sh 
+docker build -t extrapypi .
+```
+
+#### Run docker
+default configuration 
+```sh 
+docker run -p 80:80 -t extrapypi:latest
+```
