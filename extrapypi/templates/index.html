@@ -4,16 +4,17 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}"/>
 
     <style>
-        .code-example{
-            white-space: pre-wrap;
+        .code-example {
             background: #f1f1f1;
             overflow: auto;
             font-family: 'Monaco', monospace;
             border: 1px solid #999
         }
-        .section-title{
+
+        .section-title {
             margin-top: 3rem;
         }
+
     </style>
 </head>
 
@@ -34,36 +35,46 @@
     <div class="row">
         <div class="col">
             <h4 class="section-title">Uploading packages</h4>
-            <p>Extrapypi is compliant with setuptools / twine, you just need to update your `.pypirc` like this</p>
-            <div class="code-example">
-                [distutils]
-                index-servers =
-                local
+            <p>Extrapypi is compliant with setuptools / twine, you just need to update your <code>.pypirc</code> like this:</p>
+            <pre class="code-example">
+<code>
+[distutils]
+index-servers =
+    local
 
-                [local]
-                username=admin
-                password=admin
-                repository=http://mypypiurl.com/simple/
-            </div>
+[local]
+username=<span style="color: red">admin</span>
+password=<span style="color: red">admin</span>
+repository=http://<span style="color: red">mypypiurl.com</span>/simple/
+</code>
+</pre>
+            <p><code>* Make sure to change username, password and repository to your own values.</code> </p>
+
             <p>And then you can run</p>
-            <div class="code-example">
-                python setup.py bdist_wheel upload -r local
-            </div>
+            <pre class="code-example">
+<code>
+python setup.py bdist_wheel upload -r local
+</code>
+</pre>
+
             <p>Or using twine</p>
-            <div class="code-example">
-                twine upload -r local dist/extra_pypi-0.1-py3.5.egg
-            </div>
+            <pre class="code-example">
+<code>twine upload -r local dist/extra_pypi-0.1-py3.5.egg</code>
+</pre>
 
             <h4 class="section-title">Installing packages from extrapypi</h4>
             <p>Extrapypi is built to be used as an extra index, so you can simply run :</p>
-            <div class="code-example">
-                pip install extrapypi --extra-index-url http://user:password@mypypiurl.com/simple/
-            </div>
-            <p>or directly updating your `pip.conf` file </p>
-            <div class="code-example">
-                [global]
-                extra-index-url = http://user:password@mypypiurl.com/simple/
-            </div>
+            <pre class="code-example">
+<code>pip install extrapypi --extra-index-url http://<span style="color: red">user</span>:<span style="color: red">password</span>@<span style="color: red">mypypiurl.com</span>/simple/</code>
+</pre>
+            <p>or directly updating your <code>pip.conf</code> file </p>
+            <pre class="code-example">
+<code>
+[global]
+extra-index-url = http://<span style="color: red">user</span>:<span style="color: red">password</span>@<span style="color: red">mypypiurl.com</span>/simple/
+</code>
+</pre>
+            <p><code>* Make sure to change user, pass and mypypiurl.com to your own values.</code></p>
         </div>
     </div>
 </div>
