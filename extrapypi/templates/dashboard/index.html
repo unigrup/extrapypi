@@ -15,7 +15,7 @@
   <tbody>
     {% for package in packages %}
     <tr>
-      <td>{{package.id}}</td>
+      <td>{{loop.index}}</td>
       <td><a href="{{url_for('dashboard.package', package=package.name)}}">{{package.name}}</a></td>
       <td>{{package.summary}}</td>
       <td>
