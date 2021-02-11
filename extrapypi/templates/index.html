@@ -35,25 +35,26 @@
     <div class="row">
         <div class="col">
             <h4 class="section-title">Uploading packages</h4>
-            <p>Extrapypi is compliant with setuptools / twine, you just need to update your <code>.pypirc</code> like this:</p>
+            <p>Extrapypi is compliant with setuptools / twine, you just need to update your <code>.pypirc</code> like
+                this:</p>
             <pre class="code-example">
 <code>
 [distutils]
 index-servers =
-    local
+    <span style="color: red">local</span>
 
-[local]
+[<span style="color: red">local</span>]
 username=<span style="color: red">admin</span>
 password=<span style="color: red">admin</span>
 repository=http://<span style="color: red">mypypiurl.com</span>/simple/
 </code>
 </pre>
-            <p><code>* Make sure to change username, password and repository to your own values.</code> </p>
+            <p><code>* Make sure to change username, password and repository to your own values.</code></p>
 
             <p>And then you can run</p>
             <pre class="code-example">
 <code>
-python setup.py bdist_wheel upload -r local
+python setup.py bdist_wheel upload -r <span style="color: red">local</span>
 </code>
 </pre>
 
@@ -65,16 +66,57 @@ python setup.py bdist_wheel upload -r local
             <h4 class="section-title">Installing packages from extrapypi</h4>
             <p>Extrapypi is built to be used as an extra index, so you can simply run :</p>
             <pre class="code-example">
-<code>pip install extrapypi --extra-index-url http://<span style="color: red">user</span>:<span style="color: red">password</span>@<span style="color: red">mypypiurl.com</span>/simple/</code>
+<code>pip install extrapypi --extra-index-url http://<span style="color: red">user</span>:<span style="color: red">password</span>@<span
+        style="color: red">mypypiurl.com</span>/simple/</code>
 </pre>
             <p>or directly updating your <code>pip.conf</code> file </p>
             <pre class="code-example">
 <code>
 [global]
-extra-index-url = http://<span style="color: red">user</span>:<span style="color: red">password</span>@<span style="color: red">mypypiurl.com</span>/simple/
+extra-index-url = http://<span style="color: red">user</span>:<span style="color: red">password</span>@<span
+        style="color: red">mypypiurl.com</span>/simple/
 </code>
 </pre>
             <p><code>* Make sure to change user, pass and mypypiurl.com to your own values.</code></p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <h4>Using it with poetry </h4>
+            <p>Tested with:</p>
+            <ul>
+                <li>Python 3.6</li>
+                <li>Poetry 0.12.17</li>
+            </ul>
+            <div>
+                <h6>Add the repo url to the poetry configuration</h6>
+                <pre class="code-example">
+<code>poetry config repositories.<span style="color: red">local</span> http://<span style="color: red">mypypiurl.com</span>/simple/</code>
+</pre>
+            </div>
+
+            <div>
+                <h6>For autentication just add</h6>
+                <pre class="code-example">
+<code>
+poetry config http-basic.<span style="color: red">local</span> <span style="color: red">username</span> <span style="color: red">password</span>
+</code>
+</pre>
+            </div>
+
+            <div>
+                <h6>Add to project.toml:</h6>
+                <pre class="code-example">
+<code>
+[[tool.poetry.source]]
+name = "<span style="color: red">local</span>"
+url = "http://<span style="color: red">mypypiurl.com</span>/simple/"
+secondary = true
+</code>
+</pre>
+            </div>
+            <p><code>* Make sure to change username, password, local and mypypiurl.com to your own values.</code></p>
         </div>
     </div>
 </div>
