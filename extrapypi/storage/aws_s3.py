@@ -45,7 +45,7 @@ class AwsS3Storage(BaseStorage):
 
         with open(path, 'rb') as fp:
             for content in iter(lambda: fp.read(io.DEFAULT_BUFFER_SIZE), b''):
-                md5_hash.update(content)
+                md5_hash.update(content)  # pragma: no cover
 
         metadata.update({'md5_digest': md5_hash.hexdigest()})
 
