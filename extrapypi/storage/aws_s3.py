@@ -63,7 +63,7 @@ class AwsS3Storage(BaseStorage):
         Delete entire package directory
         """
         try:
-            response = self.s3.list_objects(Bucket=self.bucket, Prefix=package.name)
+            response = self.s3.list_objects(Bucket=self.bucket, Prefix=package.name+'/')
             for content in response.get('Contents', []):
                 self.s3.delete_object(Bucket=self.bucket, Key=content.get('Key'))
             return True
@@ -76,7 +76,7 @@ class AwsS3Storage(BaseStorage):
         Delete all files matching specified version
         """
         try:
-            response = self.s3.list_objects(Bucket=self.bucket, Prefix=package.name)
+            response = self.s3.list_objects(Bucket=self.bucket, Prefix=package.name+'/')
             for content in response.get('Contents', []):
                 if version in content.get('Key'):
                     self.s3.delete_object(Bucket=self.bucket, Key=content.get('Key'))
@@ -112,7 +112,7 @@ class AwsS3Storage(BaseStorage):
         based on a regex
         """
         files = []
-        response = self.s3.list_objects(Bucket=self.bucket, Prefix=package.name)
+        response = self.s3.list_objects(Bucket=self.bucket, Prefix=package.name+'/')
         for content in response.get('Contents', []):
             files.append(content.get('Key').split('/')[1])
 
